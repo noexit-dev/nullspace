@@ -3,6 +3,7 @@ import requests
 import discord
 import os
 from discord.ext import commands
+from discord import app_commands
 from dotenv import load_dotenv
 
 #rss-parsing
@@ -52,16 +53,19 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='/', intents=intents)
 
+@app_commands.command(description="tests if commands work")
 @bot.command()
 async def test(ctx):
     pass
 
+@app_commands.command(description="sets the RSS url you would like to recieve headlines from")
 @bot.command()
 async def set_url(ctx, arg):
     global url
     url = arg
 
-# displays top 10 headlines from an rss page
+# displays top 5 headlines from an rss page
+@app_commands.command(description="displays top 5 headlines from RSS")
 @bot.command()
 async def rss_hl(ctx):
     global url
