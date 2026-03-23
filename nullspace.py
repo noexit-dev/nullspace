@@ -30,7 +30,7 @@ def keep_alive():
         url = 'https://nullspace.onrender.com'
         response = requests.get(url, headers=headers, timeout=15)
 
-        time.sleep(45)
+        time.sleep(840) #sleeps for 14 min and then visits site again to keep active
 
 
 # Start the server in a separate thread so it doesn't block the bot
