@@ -2,6 +2,7 @@ import feedparser
 import requests
 import discord
 import os
+import time
 from discord.ext import commands
 from flask import Flask
 from threading import Thread
@@ -17,8 +18,26 @@ def home():
 def run():
   app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 10000)))
 
+#to keep render alive 24/7 hopefully
+def keep_alive():
+    while True:
+        #maybe use headless browser if this doesn't work
+
+        headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+
+        url = 'https://nullspace.onrender.com'
+        response = requests.get(url, headers=headers, timeout=15)
+
+        time.sleep(45)
+
+
 # Start the server in a separate thread so it doesn't block the bot
 Thread(target=run).start()
+
+#start website requester to keep website alive hopefully
+Thread(target=keep_alive).start()
 
 # rss-parsing
 
@@ -122,3 +141,23 @@ async def rss_hl(interaction: discord.Interaction):
 
 
 bot.run(TOKEN)
+
+# headless browser example
+
+# source .venv/bin/activate.fish - to activate venv
+# deactivate - deactivate venv
+# from selenium import webdriver
+# from selenium.webdriver.chrome.options import Options
+# import feedparser
+
+# options = Options()
+# options.add_argument("--headless")
+# driver = webdriver.Chrome(options=options)
+
+# driver.get("http://www.fastcompany.com/latest/rss")
+# feed_content = driver.page_source
+# feed = feedparser.parse(feed_content)
+
+# print(feed)
+
+# driver.quit()
