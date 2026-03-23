@@ -3,4 +3,3 @@ requests
 discord
 dotenv
 flask
-threading
