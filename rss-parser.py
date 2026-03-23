@@ -3,7 +3,7 @@ import requests
 import discord
 import os
 from discord.ext import commands
-from discord import app_commands
+# from discord import app_commands
 from dotenv import load_dotenv
 
 #rss-parsing
@@ -20,12 +20,16 @@ def rss_parse(arg):
 
     url = arg
 
+    # Reset cached links so repeated calls do not duplicate headlines.
+    entrylinkArr.clear()
+
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
 
     # Fetch the raw content with a custom header
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=15)
+    response.raise_for_status()
 
     # Parse the content directly
     feed = feedparser.parse(response.content)
@@ -53,31 +57,59 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='/', intents=intents)
 
-@app_commands.command(description="tests if commands work")
-@bot.command()
-async def test(ctx):
-    pass
+@bot.event
+async def setup_hook():
+    # This syncs your commands globally
+    await bot.tree.sync()
+    print("Slash commands synced!")
 
-@app_commands.command(description="sets the RSS url you would like to recieve headlines from")
-@bot.command()
-async def set_url(ctx, arg):
+# @discord.app_commands.command(description="tests if commands work")
+@bot.tree.command(name="test", description="tests out tooltip")
+async def test(interaction: discord.Interaction):
+    await interaction.response.send_message("Slash commands are working.")
+
+@bot.tree.command(name="set-url", description="description=sets the RSS url you would like to recieve headlines from")
+async def set_url(interaction: discord.Interaction, arg:str):
     global url
     url = arg
+    await interaction.response.send_message(f"RSS URL set to: {url}", ephemeral=True)
 
 # displays top 5 headlines from an rss page
-@app_commands.command(description="displays top 5 headlines from RSS")
-@bot.command()
-async def rss_hl(ctx):
+@bot.tree.command(name="rss-headlines", description="Displays top 5 headlines from chosen RSS")
+async def rss_hl(interaction: discord.Interaction):
     global url
-    rss_parse(url)
+    
+    if not url:
+        await interaction.response.send_message(
+            "Set a URL first with /set-url <rss_url>.",
+            ephemeral=True,
+        )
+        return
+
+    try:
+        rss_parse(url)
+    except requests.RequestException as exc:
+        await interaction.response.send_message(
+            f"Failed to fetch RSS feed: {exc}",
+            ephemeral=True,
+        )
+        return
 
     entryout = ""
     
     entryout += "# Latest Headlines from " + feed.feed.title + '\n'
+
+    if not entrylinkArr:
+        await interaction.response.send_message(
+            "No headlines found in that feed.",
+            ephemeral=True,
+        )
+        return
+
     for i in range(5):
         entryout += entrylinkArr[i]
 
-    await ctx.send(entryout)
+    await interaction.response.send_message(entryout)
     # print(entryout)
 
 
