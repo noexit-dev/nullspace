@@ -2,3 +2,5 @@ feedparser
 requests
 discord
 dotenv
+flask
+threading
