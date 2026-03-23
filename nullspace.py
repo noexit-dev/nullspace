@@ -4,7 +4,7 @@ import discord
 import os
 from discord.ext import commands
 # from discord import app_commands
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
 #rss-parsing
 
@@ -49,8 +49,8 @@ def rss_parse(arg):
 
 #bot-commands
 
-load_dotenv()
-TOKEN = os.getenv('DISCORD_TOKEN')
+# load_dotenv()
+# TOKEN = os.getenv('DISCORD_TOKEN')
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -113,7 +113,7 @@ async def rss_hl(interaction: discord.Interaction):
     # print(entryout)
 
 
-bot.run(TOKEN)
+bot.run(DISCORD_TOKEN) #TOKEN
 
 # headless browser example
 
