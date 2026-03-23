@@ -3,10 +3,11 @@ import requests
 import discord
 import os
 from discord.ext import commands
-# from discord import app_commands
 from flask import Flask
 from threading import Thread
 from dotenv import load_dotenv
+
+# port binding
 
 app = Flask('')
 @app.route('/')
@@ -19,7 +20,7 @@ def run():
 # Start the server in a separate thread so it doesn't block the bot
 Thread(target=run).start()
 
-#rss-parsing
+# rss-parsing
 
 entrylinkArr = []
 url = ""
@@ -51,16 +52,10 @@ def rss_parse(arg):
     if feed.bozo:
         print(f"Still getting a Bozo error: {feed.bozo_exception}")
     else:
-        # entryout += '```'
         for entry in feed.entries:
-            entrylinkArr.append('- [' + entry.title + '](' + entry.link + ')' + '\n')
-        # entryout += '```'
+            entrylinkArr.append('- [' + entry.title + '](<' + entry.link + '>)' + '\n')
 
-        # for entry in feed.entries:
-        #     print(entry.title)
-    
-
-#bot-commands
+# bot-commands
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -127,24 +122,3 @@ async def rss_hl(interaction: discord.Interaction):
 
 
 bot.run(TOKEN)
-
-# headless browser example
-
-# source .venv/bin/activate.fish - to activate venv
-# deactivate - deactivate venv
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options
-# import feedparser
-
-# options = Options()
-# options.add_argument("--headless")
-# driver = webdriver.Chrome(options=options)
-
-# driver.get("http://www.fastcompany.com/latest/rss")
-# feed_content = driver.page_source
-# feed = feedparser.parse(feed_content)
-
-# print(feed)
-
-# driver.quit()
-
