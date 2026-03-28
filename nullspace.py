@@ -18,7 +18,7 @@ def home():
 def run():
   app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 10000)))
 
-#to keep render alive 24/7 hopefully
+#to keep hosting alive 24/7
 def keep_alive():
     while True:
         #maybe use headless browser if this doesn't work
@@ -27,7 +27,7 @@ def keep_alive():
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
 
-        url = 'https://nullspace.onrender.com'
+        url = '' #put url for site you want to keep active
         response = requests.get(url, headers=headers, timeout=15)
 
         time.sleep(840) #sleeps for 14 min and then visits site again to keep active
@@ -37,7 +37,7 @@ def keep_alive():
 Thread(target=run).start()
 
 #start website requester to keep website alive hopefully
-Thread(target=keep_alive).start()
+# Thread(target=keep_alive).start()
 
 # rss-parsing
 
@@ -47,7 +47,6 @@ feed = ""
 
 def rss_parse(arg):
 
-    # url = "https://www.fastcompany.com/latest/rss"
     global url
     global feed
 
@@ -66,7 +65,6 @@ def rss_parse(arg):
 
     # Parse the content directly
     feed = feedparser.parse(response.content)
-
 
     if feed.bozo:
         print(f"Still getting a Bozo error: {feed.bozo_exception}")
@@ -90,7 +88,6 @@ async def setup_hook():
     await bot.tree.sync()
     print("Slash commands synced!")
 
-# @discord.app_commands.command(description="tests if commands work")
 @bot.tree.command(name="test", description="tests out tooltip")
 async def test(interaction: discord.Interaction):
     await interaction.response.send_message("Slash commands are working.")
@@ -137,27 +134,5 @@ async def rss_hl(interaction: discord.Interaction):
         entryout += entrylinkArr[i]
 
     await interaction.response.send_message(entryout)
-    # print(entryout)
-
 
 bot.run(TOKEN)
-
-# headless browser example
-
-# source .venv/bin/activate.fish - to activate venv
-# deactivate - deactivate venv
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options
-# import feedparser
-
-# options = Options()
-# options.add_argument("--headless")
-# driver = webdriver.Chrome(options=options)
-
-# driver.get("http://www.fastcompany.com/latest/rss")
-# feed_content = driver.page_source
-# feed = feedparser.parse(feed_content)
-
-# print(feed)
-
-# driver.quit()
